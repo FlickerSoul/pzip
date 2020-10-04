@@ -6,5 +6,14 @@ TARGETS=pzip
 
 all: $(TARGETS)
 
+pzip_utils.o: pzip_utils.c pzip_utils.h
+	$(CXX) $(CXX_FLAGS) -c -o $@ $<
+
+pzip: pzip.c pzip_utils.o
+	$(CXX) $(CXX_FLAGS) -o $@ $^
+
+run: pzip
+	./pzip
+
 clean:
-	rm -rf *~ *.o *.dSYM
+	rm -rf *~ *.o *.dSYM $(TARGETS)
