@@ -55,7 +55,7 @@ typedef struct _write_queue_t {
      * of n-1 data chunk
      */
     write_data_t* write_data_queue;
-    unsigned long long current_work_position = 1;
+    unsigned long long current_work_position;
     unsigned long long queue_size;
 
     int* queue_size_work_mapping;
