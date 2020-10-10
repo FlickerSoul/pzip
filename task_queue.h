@@ -28,7 +28,7 @@ typedef struct _write_data_t {
      * then write first_char and write_data in the previous chunk
      *
      */
-    void* write_data;
+    void* main_data;
     int data_chunk_num;
 
     char first_char;
@@ -81,12 +81,15 @@ typedef struct _task_queue_t {
 
 task_queue_t* create_task_queue(unsigned int process_queue_size);
 task_queue_t* quick_create_task_queue();
-void destroy_task_node(task_node_t** tn);
 void destroy_task_queue(task_queue_t** tq);
+
+task_node_t* create_task_node(char* chunk, int write_data_queue_position);
+void destroy_task_node(task_node_t** tn);
 
 write_queue_t* create_write_queue(unsigned int queue_size);
 void destroy_write_queue(write_queue_t** wq);
 
-task_node_t* create_task_node(char* chunk, int write_data_queue_position);
+write_data_t* create_write_data(void* data, char first, int first_count, char last, int last_count);
+void destroy_write_data(write_data_t** wd);
 
 #endif //PZIP_TASK_QUEUE_H
