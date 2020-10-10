@@ -18,6 +18,30 @@ void test_task_node_create_and_delete() {
     destroy_task_node(&task_node_ptr);
 }
 
+void test_data_composition() {
+    void* test_data = malloc(sizeof(int) + sizeof(char));
+    void* counter = test_data;
+    printf("%p\n", counter);
+
+    *(uint32_t*)counter = 38;
+    counter += sizeof(int);
+    printf("%p\n", counter);
+
+    *(char*)counter = 'a';
+    counter += 1;
+    printf("%p\n", counter);
+
+    printf("%p\n", test_data);
+    FILE* f = fopen("data_composition_out.o", "w");
+    fwrite(test_data, sizeof(int) + sizeof(char), 1, f);
+    fclose(f);
+
+    free(test_data);
+}
+
+void test_write_data_create_and_delete() {
+}
+
 void test_enqueue() {
 
 }
@@ -28,4 +52,5 @@ void test_parallel_enqueue() {
 
 int main() {
     test_task_node_create_and_delete();
+    test_data_composition();
 }
