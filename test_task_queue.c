@@ -68,7 +68,9 @@ void test_write_data_create_and_delete() {
 }
 
 void test_enqueue() {
-
+    write_queue_t* write_queue = create_write_queue(10);
+    destroy_write_queue(&write_queue);
+    assert(write_queue == NULL);
 }
 
 void test_parallel_enqueue() {
@@ -79,4 +81,5 @@ int main() {
     test_task_node_create_and_delete();
     test_data_composition();
     test_write_data_create_and_delete();
+    test_enqueue();
 }
