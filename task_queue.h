@@ -6,6 +6,7 @@
 #define PZIP_TASK_QUEUE_H
 
 #include <pthread.h>
+#include <stdlib.h>
 
 typedef struct _write_data_t {
     /*
@@ -64,7 +65,7 @@ typedef struct _write_queue_t {
     pthread_cond_t filled = PTHREAD_COND_INITIALIZER;
 } write_queue_t;
 
-typedef struct _process_queue_node_t {
+typedef struct _task_node_t {
     /*
      * task node contains info for a task
      * chunk is the read data from a file
@@ -72,26 +73,27 @@ typedef struct _process_queue_node_t {
     char* chunk;
     write_queue_t* write_target;
     unsigned long long write_data_queue_position;
-} process_queue_node;
+} task_node_t;
 
-typedef struct _process_queue_t {
+typedef struct _task_queue_t {
     /*
      * a consumer/producer queue that's used
      * to feed works to compression workers
      * it's unique in one process
      */
-    process_queue_node* task_queue;
+    task_node_t* tasks;
 
     pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
     pthread_cond_t empty = PTHREAD_COND_INITIALIZER;
     pthread_cond_t filled = PTHREAD_COND_INITIALIZER;
-} process_queue;
+} task_queue_t;
 
-process_queue* create_process_queue(int process_queue_size);
-process_queue* quick_create_process_queue();
-void destroy_process_queue(process_queue* pq);
+task_queue_t* create_task_queue(unsigned int process_queue_size);
+task_queue_t* quick_create_task_queue();
+void destroy_task_node(task_node_t* tn);
+void destroy_task_queue(task_queue_t* tq);
 
-write_queue_t* create_write_queue(int queue_size, char* file_name, FILE* write_descriptor);
+write_queue_t* create_write_queue(unsigned int queue_size);
 void destroy_write_queue(write_queue_t* wq);
 
 #endif //PZIP_TASK_QUEUE_H
