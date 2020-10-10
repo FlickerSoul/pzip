@@ -40,7 +40,13 @@ typedef struct _write_queue_t {
     /*
      * write queue for write thread
      *
-     * write_data_queue is an array of write data
+     * write_data_queue is an array of write data,
+     * suppose the first file have n chunks and
+     * the second file has m chunks
+     * the size of the queue will be n + m
+     *
+     * and the queue_size_work_mapping will be [n, m]
+     *
      * queue_size is the length of the array, noted as n
      * current_work_position is from 0 to n
      * when position = n, the write thread
@@ -51,23 +57,12 @@ typedef struct _write_queue_t {
     unsigned long long current_work_position = 1;
     unsigned long long queue_size;
 
-    char* file_name;
-    FILE* write_descriptor;
+    int* queue_size_work_mapping;
 
     pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
     pthread_cond_t empty = PTHREAD_COND_INITIALIZER;
     pthread_cond_t filled = PTHREAD_COND_INITIALIZER;
 } write_queue_t;
-
-typedef struct _write_work_queue_t {
-    /*
-     * for write thread to keep track of works
-     * it's unique in one process
-     */
-    write_queue_t* write_queues;
-    unsigned int current_work_position;
-    unsigned int work_position;
-} write_work_queue_t;
 
 typedef struct _process_queue_node_t {
     /*
@@ -75,7 +70,7 @@ typedef struct _process_queue_node_t {
      * chunk is the read data from a file
      */
     char* chunk;
-    write_queue_t write_target;
+    write_queue_t* write_target;
     unsigned long long write_data_queue_position;
 } process_queue_node;
 
@@ -96,12 +91,7 @@ process_queue* create_process_queue(int process_queue_size);
 process_queue* quick_create_process_queue();
 void destroy_process_queue(process_queue* pq);
 
-write_work_queue_t* create_write_work_queue(int write_work_num, char* write_file_names);
-void destroy_write_work_queue(write_work_queue_t* wwq);
-
 write_queue_t* create_write_queue(int queue_size, char* file_name, FILE* write_descriptor);
 void destroy_write_queue(write_queue_t* wq);
-
-
 
 #endif //PZIP_TASK_QUEUE_H
