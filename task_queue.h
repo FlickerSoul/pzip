@@ -59,10 +59,6 @@ typedef struct _write_queue_t {
     unsigned long long queue_size;
 
     int* queue_size_work_mapping;
-
-    pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-    pthread_cond_t empty = PTHREAD_COND_INITIALIZER;
-    pthread_cond_t filled = PTHREAD_COND_INITIALIZER;
 } write_queue_t;
 
 typedef struct _task_node_t {
@@ -82,10 +78,6 @@ typedef struct _task_queue_t {
      * it's unique in one process
      */
     task_node_t* tasks;
-
-    pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-    pthread_cond_t empty = PTHREAD_COND_INITIALIZER;
-    pthread_cond_t filled = PTHREAD_COND_INITIALIZER;
 } task_queue_t;
 
 task_queue_t* create_task_queue(unsigned int process_queue_size);
