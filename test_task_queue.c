@@ -15,7 +15,7 @@ void test_task_node_create_and_delete() {
     compare_string(task_node_ptr->chunk, chunk_content);
     assert(task_node_ptr->write_data_queue_position == position);
 
-    destroy_task_node(task_node_ptr);
+    destroy_task_node(&task_node_ptr);
 }
 
 void test_enqueue() {
