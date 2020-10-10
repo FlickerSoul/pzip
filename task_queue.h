@@ -67,7 +67,6 @@ typedef struct _task_node_t {
      * chunk is the read data from a file
      */
     char* chunk;
-    write_queue_t* write_target;
     unsigned long long write_data_queue_position;
 } task_node_t;
 
@@ -87,5 +86,7 @@ void destroy_task_queue(task_queue_t* tq);
 
 write_queue_t* create_write_queue(unsigned int queue_size);
 void destroy_write_queue(write_queue_t* wq);
+
+task_node_t* create_task_node(char* chunk, int write_data_queue_position);
 
 #endif //PZIP_TASK_QUEUE_H

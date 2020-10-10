@@ -25,3 +25,11 @@ void destroy_task_node(task_node_t* tn) {
 void destroy_task_queue(task_queue_t* tq) {
     free(tq);
 }
+
+task_node_t* create_task_node(char* chunk, int write_data_queue_position) {
+    task_node_t* task_node = malloc(sizeof(task_node_t));
+    task_node->chunk = chunk;
+    task_node->write_data_queue_position = write_data_queue_position;
+
+    return task_node;
+}
