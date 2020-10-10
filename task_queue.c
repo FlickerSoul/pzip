@@ -53,3 +53,19 @@ void destroy_write_data(write_data_t** write_data_ptr) {
     free(write_data);
     *write_data_ptr = NULL;
 }
+
+write_queue_t* create_write_queue(unsigned int queue_size) {
+    write_queue_t* write_queue = malloc(sizeof(write_queue_t));
+    write_queue->queue_size = 0;
+    write_queue->write_data_queue = malloc(queue_size * sizeof(write_data_t));
+    write_queue->current_work_position = 1;
+
+    return write_queue;
+}
+
+void destroy_write_queue(write_queue_t** wq_ptr) {
+    write_queue_t* write_queue = *wq_ptr;
+    free(write_queue->write_data_queue);
+    free(write_queue);
+    *wq_ptr = NULL;
+}
