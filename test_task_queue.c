@@ -27,5 +27,5 @@ void test_parallel_enqueue() {
 }
 
 int main() {
-
+    test_task_node_create_and_delete();
 }
