@@ -84,6 +84,7 @@ void* compression_worker(void* args) {
         pthread_cond_signal(&write_queue_filled);
         pthread_mutex_unlock(&write_queue_lock);
 
+        destroy_task_node(&task_node);
         fclose(file);
     }
 }
