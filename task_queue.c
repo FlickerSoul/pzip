@@ -44,7 +44,7 @@ task_node_t* get_task() {
 }
 
 void destroy_task_node(task_node_t** tn) {
-    free((*tn)->file_name);
+    // free((*tn)->file_name);
     free(*tn);
     *tn = NULL;
 }
