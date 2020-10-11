@@ -86,7 +86,9 @@ void test_task_enqueue() {
     assert(get_task() == task_node_ptr1);
     assert(global_task_queue->use_ptr == 0);
 
+    destroy_task_node(&task_node_ptr1);
     destroy_task_queue(&global_task_queue);
+    free(chunk);
 }
 
 write_data_t* write_data_gen() {
@@ -110,6 +112,7 @@ void test_write_data_enqueue() {
     assert(global_write_queue->write_data_queue[0] == data);
     put_data(data, 1);
     assert(global_write_queue->write_data_queue[1] == data);
+    destroy_write_data(&data);
     destroy_write_queue(&global_write_queue);
     assert(global_write_queue == NULL);
 }
