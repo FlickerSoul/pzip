@@ -22,17 +22,13 @@ void test_task_node_create_and_delete() {
 void test_data_composition() {
     void* test_data = malloc(sizeof(int) + sizeof(char));
     void* counter = test_data;
-    printf("%p\n", counter);
 
     *(uint32_t*)counter = 38;
     counter += sizeof(int);
-    printf("%p\n", counter);
 
     *(char*)counter = 'a';
     counter += 1;
-    printf("%p\n", counter);
 
-    printf("%p\n", test_data);
     FILE* f = fopen("data_composition_out.o", "w");
     fwrite(test_data, sizeof(int) + sizeof(char), 1, f);
     fclose(f);
@@ -67,7 +63,30 @@ void test_write_data_create_and_delete() {
     assert(write_data == NULL);
 }
 
-void test_enqueue() {
+void test_task_enqueue() {
+    gloabl_task_queue = create_task_queue(2);
+
+    assert(gloabl_task_queue->size == 2);
+
+    char* chunk_content = "abcde";
+    int position = 0;
+    char* chunk = strdup(chunk_content);
+    task_node_t* task_node_ptr1 = create_task_node(chunk, position);
+
+    put_task(task_node_ptr1);
+    assert(gloabl_task_queue->fill_ptr == 1);
+    put_task(task_node_ptr1);
+    assert(gloabl_task_queue->fill_ptr == 0);
+
+    assert(get_task() == task_node_ptr1);
+    assert(gloabl_task_queue->use_ptr == 1);
+    assert(get_task() == task_node_ptr1);
+    assert(gloabl_task_queue->use_ptr == 0);
+
+    destroy_task_queue(&gloabl_task_queue);
+}
+
+void test_write_enqueue() {
     write_queue_t* write_queue = create_write_queue(10);
     destroy_write_queue(&write_queue);
     assert(write_queue == NULL);
@@ -81,5 +100,6 @@ int main() {
     test_task_node_create_and_delete();
     test_data_composition();
     test_write_data_create_and_delete();
-    test_enqueue();
+    test_task_enqueue();
+    test_write_enqueue();
 }

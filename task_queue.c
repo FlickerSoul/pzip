@@ -6,6 +6,9 @@
 #include "constants.h"
 
 
+task_queue_t* gloabl_task_queue = NULL;
+
+
 task_queue_t* create_task_queue(unsigned int process_queue_size) {
     task_queue_t* task_queue = malloc(sizeof(task_queue_t));
     task_queue->size = process_queue_size;
