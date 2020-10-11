@@ -83,7 +83,6 @@ void* file_writer(void* args) {
         } 
 
         output(previous_data);
-        // do some thing here 
     }
 
     output(global_write_queue->write_data_queue[global_write_queue->queue_size-1]);

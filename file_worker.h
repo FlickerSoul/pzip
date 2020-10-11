@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 void* file_reader(void* args);
+void* file_writer(void* args);
 
 
 #endif //PZIP_FILE_WORKER_H
