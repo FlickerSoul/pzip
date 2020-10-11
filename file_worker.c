@@ -55,10 +55,10 @@ void* file_reader(void* args) {
 
     // indicate the works are over
     // no 996
-    // pthread_mutex_lock(&task_queue_lock);
-    // global_task_queue->end = 1;
-    // pthread_cond_signal(&task_queue_filled);
-    // pthread_mutex_lock(&task_queue_lock);
+    pthread_mutex_lock(&task_queue_lock);
+    global_task_queue->end = 1;
+    pthread_cond_signal(&task_queue_filled);
+    pthread_mutex_unlock(&task_queue_lock);
 
     printf("end indicating end\n");
 
