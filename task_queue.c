@@ -9,12 +9,21 @@
 task_queue_t* create_task_queue(unsigned int process_queue_size) {
     task_queue_t* task_queue = malloc(sizeof(task_queue_t));
     task_queue->tasks = malloc(process_queue_size * sizeof(task_node_t));
+    task_queue->fill_ptr = 0;
+    task_queue->use_ptr = 0;
 
+    pthread_mutex_init(&(task_queue->lock), NULL);
+    pthread_cond_init(&(task_queue->empty), NULL);
+    pthread_cond_init(&(task_queue->filled), NULL);
     return task_queue;
 }
 
 task_queue_t* quick_create_task_queue() {
     return create_task_queue(DEFAULT_TASK_QUEUE_SIZE);
+}
+
+void put_task(task_queue_t* task_queue, task_node_t* task_node) {
+    
 }
 
 void destroy_task_node(task_node_t** tn) {
@@ -23,9 +32,14 @@ void destroy_task_node(task_node_t** tn) {
     *tn = NULL;
 }
 
-void destroy_task_queue(task_queue_t** tq) {
-    free(*tq);
-    *tq = NULL;
+void destroy_task_queue(task_queue_t** tq_ptr) {
+    task_queue_t* task_queue = *tq_ptr;
+    pthread_mutex_destroy(&(task_queue->lock));
+    pthread_cond_destroy(&(task_queue->empty));
+    pthread_cond_destroy(&(task_queue->filled));
+    free(task_queue->tasks);
+    free(task_queue);
+    *tq_ptr = NULL;
 }
 
 task_node_t* create_task_node(char* chunk, int write_data_queue_position) {

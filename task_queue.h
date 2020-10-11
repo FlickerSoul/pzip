@@ -77,11 +77,20 @@ typedef struct _task_queue_t {
      * it's unique in one process
      */
     task_node_t* tasks;
+    int fill_ptr;
+    int use_ptr;
+
+    pthread_mutex_t lock;
+    pthread_cond_t empty;
+    pthread_cond_t filled;
 } task_queue_t;
 
 task_queue_t* create_task_queue(unsigned int process_queue_size);
 task_queue_t* quick_create_task_queue();
 void destroy_task_queue(task_queue_t** tq);
+
+void put_task(task_queue_t* task_queue, task_node_t* task_node);
+task_node_t* get_task(task_queue_t* task_queue);
 
 task_node_t* create_task_node(char* chunk, int write_data_queue_position);
 void destroy_task_node(task_node_t** tn);
