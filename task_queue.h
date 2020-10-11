@@ -29,7 +29,7 @@ typedef struct _write_data_t {
      *
      */
     void* main_data;
-    int data_chunk_num;
+    unsigned int data_chunk_num;
 
     char first_char;
     uint32_t first_count;
@@ -104,7 +104,7 @@ void destroy_write_queue(write_queue_t** wq);
 void put_data(write_data_t* data, unsigned long long position);
 write_data_t* get_data();
 
-write_data_t* create_write_data(void* data, char first, int first_count, char last, int last_count, int data_chunk_num);
+write_data_t* create_write_data(void* data, char first, uint32_t first_count, char last, uint32_t last_count, unsigned int data_chunk_num);
 void destroy_write_data(write_data_t** wd);
 
 #endif //PZIP_TASK_QUEUE_H

@@ -48,9 +48,15 @@ void test_complex_compress_data() {
     assert(data->last_count == 1);
 }
 
+void test_write() {
+    uint32_t d = 32;
+    fwrite(&d, sizeof(uint32_t), 1, stdout);
+}
+
 int main() {
     test_get_chunk_num();
     test_simple_compress_data();
     test_complex_compress_data();
+    test_write();
     return 0;
 }

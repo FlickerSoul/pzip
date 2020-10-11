@@ -101,8 +101,8 @@ write_data_t* write_data_gen() {
 }
 
 void test_write_data_enqueue() {
-    global_write_queue = create_write_queue(2);
-    assert(global_write_queue->queue_size == 2);
+    global_write_queue = create_write_queue(10);
+    assert(global_write_queue->queue_size == 10);
     assert(global_write_queue->current_work_position == 1);
 
     write_data_t* data = write_data_gen();

@@ -50,7 +50,7 @@ void* file_reader(void* args) {
 
 
 void output(write_data_t* data) {
-    fwrite(&data->first_count, UINT32_SIZE, 1, stdout);
+    fwrite(&(data->first_count), UINT32_SIZE, 1, stdout);
     printf("%c", data->first_char);
 
     if (data->main_data != NULL) {

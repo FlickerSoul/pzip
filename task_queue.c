@@ -66,7 +66,7 @@ task_node_t* create_task_node(char* file_name, unsigned long long file_position,
     return task_node;
 }
 
-write_data_t* create_write_data(void* main_data, char first, int first_count, char last, int last_count, int data_chunk_num) {
+write_data_t* create_write_data(void* main_data, char first, uint32_t first_count, char last, uint32_t last_count, unsigned int data_chunk_num) {
     write_data_t* write_data = malloc(sizeof(write_data_t));
     assert(write_data != NULL);
     write_data->main_data = main_data;
