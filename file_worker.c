@@ -24,6 +24,8 @@ void* file_reader(void* args) {
         write_queue_size += chunk_size;
 
         fseek(file, 0L, SEEK_SET);
+
+        fclose(file);
     }
 
     global_write_queue = create_write_queue(write_queue_size);
@@ -43,13 +45,13 @@ void* file_reader(void* args) {
         }
     }
 
+    // indicate the works are over
+    // no 996
     pthread_mutex_lock(&task_queue_lock);
     gloabl_task_queue->end = 1;
     pthread_mutex_lock(&task_queue_lock);
 
     return NULL;
-    // indicate the works are over
-    // no 996
 }
 
 
