@@ -8,7 +8,7 @@
 #include "constants.h"
 #include "task_queue.h"
 #include "locks.h"
-#include <stdio.h>
+#include "file_worker_utils.h"
 
 void* file_reader(void* args);
 void* file_writer(void* args);
