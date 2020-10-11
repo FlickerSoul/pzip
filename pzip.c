@@ -62,8 +62,8 @@ int main(int argc, char** argv) {
         temp += CHAR_PTR_SIZE;
     }
     free(read_worker_argv);
-    // destroy_task_queue(&global_task_queue);
-    // destroy_write_queue(&global_write_queue);
+    destroy_task_queue(&global_task_queue);
+    destroy_write_queue(&global_write_queue);
 
     return 0;
 }
