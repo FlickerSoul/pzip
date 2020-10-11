@@ -91,8 +91,9 @@ void* file_writer(void* args) {
     pthread_mutex_unlock(&global_write_queue_lock);
 
     printf("write queue created: %p\n", global_write_queue);
+    printf("write queue start work position: %llu, queue size: %llu\n", global_write_queue->current_work_position, global_write_queue->queue_size);
 
-    while (global_write_queue->current_work_position == global_write_queue->queue_size) {
+    while (global_write_queue->current_work_position < global_write_queue->queue_size) {
 
         printf("init writing\n");
         write_data_t* previous_data;
@@ -103,10 +104,12 @@ void* file_writer(void* args) {
         printf("start getting previous data and current data\n");
 
         pthread_mutex_lock(&write_queue_lock);
+
         while (global_write_queue->write_data_queue[global_write_queue->current_work_position-1] == NULL || 
                global_write_queue->write_data_queue[global_write_queue->current_work_position] == NULL) {
 
-            printf("waiting for previous data and current data\n");
+            
+            printf("waiting for previous data and current data, previous %p, current %p\n", global_write_queue->write_data_queue[global_write_queue->current_work_position-1], global_write_queue->write_data_queue[global_write_queue->current_work_position]);
 
             pthread_cond_wait(&write_queue_filled, &write_queue_lock);
         }
@@ -129,7 +132,20 @@ void* file_writer(void* args) {
         destroy_write_data(&global_write_queue->write_data_queue[previous_position]);
     }
 
+    printf("start getting last job\n");
+    pthread_mutex_lock(&write_queue_lock);
+    printf("acquired lock for last job\n");
+    while (global_write_queue->write_data_queue[global_write_queue->queue_size-1] == NULL) {
+        printf("yield write lock to wait for data, last job %p\n", global_write_queue->write_data_queue[global_write_queue->queue_size-1]);
+        pthread_cond_wait(&write_queue_filled, &write_queue_lock);
+        printf("wake up to write last one\n");
+    }
     output(global_write_queue->write_data_queue[global_write_queue->queue_size-1]);
+    printf("wrote last one\n");
+
+    pthread_mutex_unlock(&write_queue_lock);
+
+    printf("end writing\n");
 
     return NULL;
 }

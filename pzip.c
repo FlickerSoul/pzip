@@ -39,17 +39,20 @@ int main(int argc, char** argv) {
     pthread_t write_thread;
 
     pthread_create(&read_thread, NULL, file_reader, read_worker_argv);
-    // pthread_create(&write_thread, NULL, file_writer, NULL);
+    pthread_create(&write_thread, NULL, file_writer, NULL);
     for (int i = 0; i < THREAD_NUM; i++) {
         pthread_create(&compression_threads[i], NULL, compression_worker, NULL);
     }
 
     printf("start join\n");
-    // pthread_join(write_thread, dummy_return);
+    pthread_join(write_thread, NULL);
+    printf("joined write\n");
     pthread_join(read_thread, NULL);
+    printf("joined read\n");
     for (int i = 0; i < THREAD_NUM; i++) {
         pthread_join(compression_threads[i], NULL);
     }
+    printf("joined compression\n");
     printf("end join\n");
 
 
