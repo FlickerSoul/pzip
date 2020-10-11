@@ -8,6 +8,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <pthread.h>
+
+#include "constants.h"
+#include "file_worker.h"
+#include "compression_worker.h"
 
 
 unsigned int THREAD_NUM;
