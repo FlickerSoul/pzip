@@ -47,3 +47,44 @@ void* file_reader(void* args) {
     // no 996
 }
 
+
+void output(write_data_t* data) {
+    fwrite(&data->first_count, UINT32_SIZE, 1, stdout);
+    printf("%c", data->first_char);
+
+    if (data->main_data != NULL) {
+        fwrite(&data->main_data, data->data_chunk_num * WRITE_CHUNK_SIZE, 1, stdout);
+    }
+
+    if (data->last_count > 0) {
+        fwrite(&data->last_count, UINT32_SIZE, 1, stdout);
+        printf("%c", data->last_char);
+    }
+}
+
+
+void* file_writer(void* args) {
+    while (global_write_queue->current_work_position = global_write_queue->queue_size) {
+        pthread_mutex_lock(&write_queue_lock);
+        while (global_write_queue->write_data_queue[global_write_queue->current_work_position-1] == NULL || 
+               global_write_queue->write_data_queue[global_write_queue->current_work_position] == NULL) {
+            pthread_cond_wait(&write_queue_filled, &write_queue_lock);
+        }
+
+        write_data_t* previous_data = global_write_queue->write_data_queue[global_write_queue->current_work_position-1];
+        write_data_t* data = get_data();
+
+        pthread_cond_signal(&write_queue_empty);
+        pthread_mutex_unlock(&write_queue_lock);
+
+        if (previous_data->last_char == data->first_char) {
+            data->first_count += previous_data->last_count;
+            previous_data->last_count = 0;
+        } 
+
+        output(previous_data);
+        // do some thing here 
+    }
+
+    output(global_write_queue->write_data_queue[global_write_queue->queue_size-1]);
+}
