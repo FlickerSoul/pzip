@@ -8,12 +8,14 @@
 
 void test_task_node_create_and_delete() {
     char* chunk_content = "abcde";
-    int position = 0;
+    int queue_position = 0;
+    int file_position = 0;
     char* chunk = strdup(chunk_content);
-    task_node_t* task_node_ptr = create_task_node(chunk, position);
+    task_node_t* task_node_ptr = create_task_node(chunk, file_position, queue_position);
 
-    compare_string(task_node_ptr->chunk, chunk_content);
-    assert(task_node_ptr->write_data_queue_position == position);
+    compare_string(task_node_ptr->file_name, chunk_content);
+    assert(task_node_ptr->write_data_queue_position == queue_position);
+    assert(task_node_ptr->file_position == file_position);
 
     destroy_task_node(&task_node_ptr);
     assert(task_node_ptr == NULL);
@@ -69,9 +71,10 @@ void test_task_enqueue() {
     assert(gloabl_task_queue->size == 2);
 
     char* chunk_content = "abcde";
-    int position = 0;
+    int file_position = 0;
+    int queue_position = 0;
     char* chunk = strdup(chunk_content);
-    task_node_t* task_node_ptr1 = create_task_node(chunk, position);
+    task_node_t* task_node_ptr1 = create_task_node(chunk, file_position, queue_position);
 
     put_task(task_node_ptr1);
     assert(gloabl_task_queue->fill_ptr == 1);
