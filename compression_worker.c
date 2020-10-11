@@ -93,6 +93,8 @@ void* compression_worker(void* args) {
 
         write_data_t* data = compress_data(cached_file_ptr);
 
+        printf("got data for %s file at position %llu at write array %llu \n", cached_file_name, task_node->file_position, task_node->write_data_queue_position);
+
         pthread_mutex_lock(&write_queue_lock);
         put_data(data, task_node->write_data_queue_position);
         pthread_cond_signal(&write_queue_filled);

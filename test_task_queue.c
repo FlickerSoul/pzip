@@ -54,7 +54,7 @@ void test_write_data_create_and_delete() {
     char last = 'c';
     int first_count = 10;
     int last_count = 20;
-    write_data_t* write_data = create_write_data(chunck, first, first_count, last, last_count);
+    write_data_t* write_data = create_write_data(chunck, first, first_count, last, last_count, 1);
     assert(write_data->main_data == chunck);
     assert(write_data->first_char = first);
     assert(write_data->last_char = last);
@@ -95,7 +95,7 @@ write_data_t* write_data_gen() {
     char last = 'c';
     int first_count = 10;
     int last_count = 20;
-    write_data_t* write_data = create_write_data(chunck, first, first_count, last, last_count);
+    write_data_t* write_data = create_write_data(chunck, first, first_count, last, last_count, 1);
 
     return write_data;
 }

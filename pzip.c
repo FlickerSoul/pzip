@@ -20,6 +20,8 @@ int main(int argc, char** argv) {
         temp += CHAR_PTR_SIZE;
     }
 
+    global_task_queue = quick_create_task_queue();
+
     pthread_t read_thread;
     pthread_t compression_threads[THREAD_NUM];
     pthread_t write_thread;

@@ -18,7 +18,10 @@ void* file_reader(void* args) {
         write_queue_size += chunck_size_array[i];
     }
 
+    pthread_mutex_lock(&global_write_queue_lock);
     global_write_queue = create_write_queue(write_queue_size);
+    pthread_cond_signal(&global_write_queue_cond);
+    pthread_mutex_unlock(&global_write_queue_lock);
 
     unsigned long long write_queue_position_counter = 0;
 
@@ -62,6 +65,12 @@ void output(write_data_t* data) {
 
 
 void* file_writer(void* args) {
+    pthread_mutex_lock(&global_write_queue_lock);
+    while (global_write_queue == NULL) {
+        pthread_cond_wait(&global_write_queue_cond, &global_write_queue_lock);
+    }
+    pthread_mutex_unlock(&global_write_queue_lock);
+
     while (global_write_queue->current_work_position == global_write_queue->queue_size) {
         write_data_t* previous_data;
         write_data_t* current_data;
