@@ -5,7 +5,6 @@
 #ifndef PZIP_TASK_QUEUE_H
 #define PZIP_TASK_QUEUE_H
 
-#include <pthread.h>
 #include <stdlib.h>
 
 typedef struct _write_data_t {
@@ -66,7 +65,8 @@ typedef struct _task_node_t {
      * task node contains info for a task
      * chunk is the read data from a file
      */
-    char* chunk;
+    char* file_name;
+    unsigned long long file_position;
     unsigned long long write_data_queue_position;
 } task_node_t;
 
@@ -78,11 +78,13 @@ typedef struct _task_queue_t {
      */
     task_node_t** tasks;
     unsigned int size;
+    unsigned int count;
     unsigned int fill_ptr;
     unsigned int use_ptr;
 } task_queue_t;
 
 extern task_queue_t* gloabl_task_queue;
+extern write_queue_t* global_write_queue;
 
 task_queue_t* create_task_queue(unsigned int process_queue_size);
 task_queue_t* quick_create_task_queue();
@@ -91,10 +93,10 @@ void destroy_task_queue(task_queue_t** tq);
 void put_task(task_node_t* task_node);
 task_node_t* get_task();
 
-task_node_t* create_task_node(char* chunk, int write_data_queue_position);
+task_node_t* create_task_node(char* file_name, unsigned long long file_position, unsigned long long write_data_queue_position);
 void destroy_task_node(task_node_t** tn);
 
-write_queue_t* create_write_queue(unsigned int queue_size);
+write_queue_t* create_write_queue(unsigned long long queue_size);
 void destroy_write_queue(write_queue_t** wq);
 
 write_data_t* create_write_data(void* data, char first, int first_count, char last, int last_count);

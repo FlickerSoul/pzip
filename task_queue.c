@@ -13,6 +13,7 @@ task_queue_t* create_task_queue(unsigned int process_queue_size) {
     task_queue_t* task_queue = malloc(sizeof(task_queue_t));
     task_queue->size = process_queue_size;
     task_queue->tasks = malloc(process_queue_size * sizeof(task_node_t*));
+    task_queue->count = 0;
     task_queue->fill_ptr = 0;
     task_queue->use_ptr = 0;
     return task_queue;
@@ -25,17 +26,19 @@ task_queue_t* quick_create_task_queue() {
 void put_task(task_node_t* task_node) {
     gloabl_task_queue->tasks[gloabl_task_queue->fill_ptr] = task_node;
     gloabl_task_queue->fill_ptr = (gloabl_task_queue->fill_ptr+1) % gloabl_task_queue->size;
+    gloabl_task_queue->count++;
 }
 
 task_node_t* get_task() {
     task_node_t* task_node = gloabl_task_queue->tasks[gloabl_task_queue->use_ptr];
     gloabl_task_queue->use_ptr = (gloabl_task_queue->use_ptr + 1) % gloabl_task_queue->size;
+    gloabl_task_queue->count--;
 
     return task_node;
 }
 
 void destroy_task_node(task_node_t** tn) {
-    free((*tn)->chunk);
+    free((*tn)->file_name);
     free(*tn);
     *tn = NULL;
 }
@@ -47,9 +50,10 @@ void destroy_task_queue(task_queue_t** tq_ptr) {
     *tq_ptr = NULL;
 }
 
-task_node_t* create_task_node(char* chunk, int write_data_queue_position) {
+task_node_t* create_task_node(char* file_name, unsigned long long file_position, unsigned long long write_data_queue_position) {
     task_node_t* task_node = malloc(sizeof(task_node_t));
-    task_node->chunk = chunk;
+    task_node->file_name = file_name;
+    task_node->file_position = file_position;
     task_node->write_data_queue_position = write_data_queue_position;
 
     return task_node;
@@ -73,9 +77,9 @@ void destroy_write_data(write_data_t** write_data_ptr) {
     *write_data_ptr = NULL;
 }
 
-write_queue_t* create_write_queue(unsigned int queue_size) {
+write_queue_t* create_write_queue(unsigned long long queue_size) {
     write_queue_t* write_queue = malloc(sizeof(write_queue_t));
-    write_queue->queue_size = 0;
+    write_queue->queue_size = queue_size;
     write_queue->write_data_queue = malloc(queue_size * sizeof(write_data_t));
     write_queue->current_work_position = 1;
 
