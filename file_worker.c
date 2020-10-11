@@ -53,11 +53,11 @@ void output(write_data_t* data) {
 
     if (data->main_data != NULL) {
         fwrite(&data->main_data, data->data_chunk_num * WRITE_CHUNK_SIZE, 1, stdout);
-    }
 
-    if (data->last_count > 0) {
-        fwrite(&data->last_count, UINT32_SIZE, 1, stdout);
-        printf("%c", data->last_char);
+        if (data->last_count > 0) {
+            fwrite(&data->last_count, UINT32_SIZE, 1, stdout);
+            printf("%c", data->last_char);
+        }
     }
 }
 
@@ -82,7 +82,7 @@ void* file_writer(void* args) {
         pthread_cond_signal(&write_queue_empty);
         pthread_mutex_unlock(&write_queue_lock);
 
-        if (previous_data->last_char == current_data->first_char) {
+        if (previous_data->last_count > 0 && previous_data->last_char == current_data->first_char) {
             current_data->first_count += previous_data->last_count;
             previous_data->last_count = 0;
         } 
