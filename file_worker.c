@@ -9,14 +9,13 @@ void* file_reader(void* args) {
     int file_num = *(int*)args;
     args += INT_SIZE;
 
-    char* file_names = (char*) args;
-    unsigned int* chunck_size_array[file_num];
+    char** file_names = (char**) args;
+    unsigned int chunck_size_array[file_num];
 
     unsigned long long write_queue_size = 0;
 
     for (int i = 0; i < file_num; i++) {
-        FILE* file = fopen(file_names[i]);
-        file_array[i] = file;
+        FILE* file = fopen(file_names[i], "r");
 
         fseek(file, 0L, SEEK_END);
         long file_size = ftell(file);
@@ -32,10 +31,10 @@ void* file_reader(void* args) {
     unsigned long long write_queue_position_counter = 0;
 
     for (int i = 0; i < file_num; i++) {
-        for (int j = 0; j < chunck_size_array[i]; j++) {
+        for (unsigned int j = 0; j < chunck_size_array[i]; j++) {
             pthread_mutex_lock(&task_queue_lock);
             while (gloabl_task_queue->count == gloabl_task_queue->size) {
-                pthread_cond_wait(&task_queue_lock, &task_queue_lock);
+                pthread_cond_wait(&task_queue_empty, &task_queue_lock);
             }
             task_node_t* tn = create_task_node(file_names[i], j, write_queue_position_counter++);
             put_task(tn);
@@ -43,6 +42,12 @@ void* file_reader(void* args) {
             pthread_mutex_unlock(&task_queue_lock);
         }
     }
+
+    pthread_mutex_lock(&task_queue_lock);
+    gloabl_task_queue->end = 1;
+    pthread_mutex_lock(&task_queue_lock);
+
+    return NULL;
     // indicate the works are over
     // no 996
 }
@@ -64,8 +69,10 @@ void output(write_data_t* data) {
 
 
 void* file_writer(void* args) {
-    while (global_write_queue->current_work_position = global_write_queue->queue_size) {
-        write_data_t* previous_data, data;
+    while (global_write_queue->current_work_position == global_write_queue->queue_size) {
+        write_data_t* previous_data;
+        write_data_t* current_data;
+
         unsigned long long previous_position;
 
         pthread_mutex_lock(&write_queue_lock);
@@ -76,19 +83,21 @@ void* file_writer(void* args) {
 
         previous_position = global_write_queue->current_work_position-1;
         previous_data = global_write_queue->write_data_queue[previous_position];
-        data = get_data();
+        current_data = get_data();
 
         pthread_cond_signal(&write_queue_empty);
         pthread_mutex_unlock(&write_queue_lock);
 
-        if (previous_data->last_char == data->first_char) {
-            data->first_count += previous_data->last_count;
+        if (previous_data->last_char == current_data->first_char) {
+            current_data->first_count += previous_data->last_count;
             previous_data->last_count = 0;
         } 
 
         output(previous_data);
-        destroy_write_data(&global_write_queue[previous_position]);
+        destroy_write_data(&global_write_queue->write_data_queue[previous_position]);
     }
 
     output(global_write_queue->write_data_queue[global_write_queue->queue_size-1]);
+
+    return NULL;
 }
