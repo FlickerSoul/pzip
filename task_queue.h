@@ -53,7 +53,7 @@ typedef struct _write_queue_t {
      * writes the first_char, write_data, and last_char
      * of n-1 data chunk
      */
-    write_data_t* write_data_queue;
+    write_data_t** write_data_queue;
     unsigned long long current_work_position;
     unsigned long long queue_size;
 
@@ -98,6 +98,8 @@ void destroy_task_node(task_node_t** tn);
 
 write_queue_t* create_write_queue(unsigned long long queue_size);
 void destroy_write_queue(write_queue_t** wq);
+void put_data(write_data_t* data, unsigned long long position);
+write_data_t* get_data();
 
 write_data_t* create_write_data(void* data, char first, int first_count, char last, int last_count);
 void destroy_write_data(write_data_t** wd);

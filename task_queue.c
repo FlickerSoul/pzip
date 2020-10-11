@@ -77,10 +77,24 @@ void destroy_write_data(write_data_t** write_data_ptr) {
     *write_data_ptr = NULL;
 }
 
+void put_data(write_data_t* data, unsigned long long position) {
+    global_write_queue->write_data_queue[position] = data;
+}
+
+write_data_t* get_data() {
+    write_data_t* data = global_write_queue->write_data_queue[global_write_queue->current_work_position++];
+    return data;
+}
+
 write_queue_t* create_write_queue(unsigned long long queue_size) {
     write_queue_t* write_queue = malloc(sizeof(write_queue_t));
     write_queue->queue_size = queue_size;
-    write_queue->write_data_queue = malloc(queue_size * sizeof(write_data_t));
+
+    write_queue->write_data_queue = malloc(queue_size * sizeof(write_data_t*));
+    for (int i = 0; i < queue_size; i++) {
+        write_queue->write_data_queue[i] = NULL;
+    }
+    
     write_queue->current_work_position = 1;
 
     return write_queue;
