@@ -81,6 +81,8 @@ typedef struct _task_queue_t {
     unsigned int count;
     unsigned int fill_ptr;
     unsigned int use_ptr;
+    int end;
+
 } task_queue_t;
 
 extern task_queue_t* gloabl_task_queue;

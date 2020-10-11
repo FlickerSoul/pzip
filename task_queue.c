@@ -16,6 +16,7 @@ task_queue_t* create_task_queue(unsigned int process_queue_size) {
     task_queue->count = 0;
     task_queue->fill_ptr = 0;
     task_queue->use_ptr = 0;
+    task_queue->end = 0;
     return task_queue;
 }
 
