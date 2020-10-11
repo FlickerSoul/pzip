@@ -47,5 +47,14 @@ int main(int argc, char** argv) {
         pthread_join(compression_threads[i], dummy_return);
     }
 
+    temp = read_worker_argv + INT_SIZE;
+    for (int i = 0; i < THREAD_NUM; i++) {
+        free(*(char**)temp);
+        temp += CHAR_PTR_SIZE;
+    }
+    free(read_worker_argv);
+    destroy_task_queue(global_task_queue);
+    destroy_write_queue(global_write_queue);
+
     return 0;
 }
