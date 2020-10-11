@@ -89,8 +89,27 @@ void test_task_enqueue() {
     destroy_task_queue(&gloabl_task_queue);
 }
 
-void test_write_enqueue() {
-    global_write_queue = create_write_queue(10);
+write_data_t* write_data_gen() {
+    void* chunck = data_gen();
+    char first = 'b';
+    char last = 'c';
+    int first_count = 10;
+    int last_count = 20;
+    write_data_t* write_data = create_write_data(chunck, first, first_count, last, last_count);
+
+    return write_data;
+}
+
+void test_write_data_enqueue() {
+    global_write_queue = create_write_queue(2);
+    assert(global_write_queue->queue_size == 2);
+    assert(global_write_queue->current_work_position == 1);
+
+    write_data_t* data = write_data_gen();
+    put_data(data, 0);
+    assert(global_write_queue->write_data_queue[0] == data);
+    put_data(data, 1);
+    assert(global_write_queue->write_data_queue[1] == data);
     destroy_write_queue(&global_write_queue);
     assert(global_write_queue == NULL);
 }
@@ -101,8 +120,8 @@ void test_parallel_enqueue() {
 
 int main() {
     test_task_node_create_and_delete();
-    test_data_composition();
     test_write_data_create_and_delete();
+    test_data_composition();
     test_task_enqueue();
-    test_write_enqueue();
+    test_write_data_enqueue();
 }
