@@ -68,10 +68,8 @@ void* compression_worker(void* args) {
                 data_chunk_num += 1;
             }
 
-            temp -= 1;
-            last_char = (*(char*)temp);
-            temp -= 4;
-            last_count = (*(uint32_t*)temp);
+            last_char = *(char*)(temp-CHAR_SIZE);
+            last_count = *(uint32_t*)(temp-WRITE_CHUNK_SIZE);
             data_chunk_num -= 1;
 
             if (data_chunk_num == 0) {
@@ -85,6 +83,8 @@ void* compression_worker(void* args) {
         put_data(data, task_node->write_data_queue_position);
         pthread_cond_signal(&write_queue_filled);
         pthread_mutex_unlock(&write_queue_lock);
+
+        fclose(file);
     }
 }
 
