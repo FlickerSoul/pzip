@@ -5,6 +5,7 @@
 #include "compression_worker.h"
 
 write_data_t* compress_data(FILE* file) {
+    int char_counter = CHUNK_SIZE;
 
     void* chunk = NULL;
     int data_chunk_num = 0;
@@ -16,9 +17,11 @@ write_data_t* compress_data(FILE* file) {
     int c, last = first_char = fgetc(file);
     int c_count = first_count = 0;
 
+    char_counter -= 1;
+
     assert(last != EOF);
 
-    for (first_count = 1; (c = fgetc(file)) == last; first_count++) {
+    for (first_count = 1; (c = fgetc(file)) == last; first_count++, char_counter--) {
         // empty
     }
 
@@ -28,8 +31,8 @@ write_data_t* compress_data(FILE* file) {
         chunk = malloc(WRITE_CHUNK_SIZE * CHUNK_SIZE);
         void* temp = chunk;
 
-        while (last != EOF) {
-            for (c_count = 1; (c = fgetc(file)) == last; c_count++) {
+        while (last != EOF || char_counter == 0) {
+            for (c_count = 1; (c = fgetc(file)) == last || char_counter == 0; c_count++, char_counter--) {
                 // empty
             }
 
@@ -45,7 +48,7 @@ write_data_t* compress_data(FILE* file) {
 
         last_char = *(char*)(temp-CHAR_SIZE);
         last_count = *(uint32_t*)(temp-WRITE_CHUNK_SIZE);
-        data_chunk_num -= 1;
+        data_chunk_num += 1;
 
         if (data_chunk_num == 0) {
             free(chunk);
