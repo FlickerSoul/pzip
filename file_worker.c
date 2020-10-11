@@ -65,14 +65,18 @@ void output(write_data_t* data) {
 
 void* file_writer(void* args) {
     while (global_write_queue->current_work_position = global_write_queue->queue_size) {
+        write_data_t* previous_data, data;
+        unsigned long long previous_position;
+
         pthread_mutex_lock(&write_queue_lock);
         while (global_write_queue->write_data_queue[global_write_queue->current_work_position-1] == NULL || 
                global_write_queue->write_data_queue[global_write_queue->current_work_position] == NULL) {
             pthread_cond_wait(&write_queue_filled, &write_queue_lock);
         }
 
-        write_data_t* previous_data = global_write_queue->write_data_queue[global_write_queue->current_work_position-1];
-        write_data_t* data = get_data();
+        previous_position = global_write_queue->current_work_position-1;
+        previous_data = global_write_queue->write_data_queue[previous_position];
+        data = get_data();
 
         pthread_cond_signal(&write_queue_empty);
         pthread_mutex_unlock(&write_queue_lock);
@@ -83,6 +87,7 @@ void* file_writer(void* args) {
         } 
 
         output(previous_data);
+        destroy_write_data(&global_write_queue[previous_position]);
     }
 
     output(global_write_queue->write_data_queue[global_write_queue->queue_size-1]);
