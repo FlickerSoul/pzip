@@ -26,7 +26,7 @@ void* file_reader(void* args) {
         fseek(file, 0L, SEEK_SET);
     }
 
-    write_queue_t* global_write_queue = create_write_queue(write_queue_size);
+    global_write_queue = create_write_queue(write_queue_size);
 
     unsigned long long write_queue_position_counter = 0;
 

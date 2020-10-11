@@ -7,6 +7,7 @@
 
 
 task_queue_t* gloabl_task_queue = NULL;
+write_queue_t* global_write_queue = NULL;
 
 
 task_queue_t* create_task_queue(unsigned int process_queue_size) {

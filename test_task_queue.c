@@ -90,9 +90,9 @@ void test_task_enqueue() {
 }
 
 void test_write_enqueue() {
-    write_queue_t* write_queue = create_write_queue(10);
-    destroy_write_queue(&write_queue);
-    assert(write_queue == NULL);
+    global_write_queue = create_write_queue(10);
+    destroy_write_queue(&global_write_queue);
+    assert(global_write_queue == NULL);
 }
 
 void test_parallel_enqueue() {
