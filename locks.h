@@ -8,13 +8,13 @@
 #include <pthread.h>
 
 
-pthread_mutex_t task_queue_lock = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t task_queue_empty = PTHREAD_COND_INITIALIZER;
-pthread_cond_t task_queue_filled = PTHREAD_COND_INITIALIZER;
+extern pthread_mutex_t task_queue_lock;
+extern pthread_cond_t task_queue_empty;
+extern pthread_cond_t task_queue_filled;
 
 
-pthread_mutex_t write_queue_lock = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t write_queue_empty = PTHREAD_COND_INITIALIZER;
-pthread_cond_t write_queue_filled = PTHREAD_COND_INITIALIZER;
+extern pthread_mutex_t write_queue_lock;
+extern pthread_cond_t write_queue_empty;
+extern pthread_cond_t write_queue_filled;
 
 #endif //PZIP_LOCKS_H
