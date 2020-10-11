@@ -33,8 +33,14 @@ test_utils.o: test_utils.c test_utils.h
 test_task_queue.o: test_task_queue.c task_queue.o test_utils.o constants.o
 	$(CXX) $(CXX_FLAGS) -o $@ $^
 
+test_workers.o: test_workers.c compression_worker.o file_worker_utils.o constants.o locks.o task_queue.o
+	$(CXX) $(CXX_FLAGS) -o $@ $^
+
 test_task_queue: test_task_queue.o
 	./test_task_queue.o
+
+test_workers: test_workers.o
+	./test_workers.o
 
 pzip: pzip.c pzip_utils.o task_queue.o file_worker_utils.o file_worker.o compression_worker.o locks.o constants.o
 	$(CXX) $(CXX_FLAGS) -o $@ $^
