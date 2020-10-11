@@ -61,13 +61,15 @@ write_data_t* compress_data(FILE* file) {
 
 
 void* compression_worker(void* args) {
+    char* cached_file_name = NULL;
+    FILE* cached_file_ptr = NULL;
     while (1) {
         task_node_t* task_node;
 
         pthread_mutex_lock(&task_queue_lock);
         while (global_task_queue->count == 0) {
             if (global_task_queue->end) {
-                return NULL;
+                break;
             }
             pthread_cond_wait(&task_queue_filled, &task_queue_lock);
         }
@@ -77,12 +79,16 @@ void* compression_worker(void* args) {
         pthread_cond_signal(&task_queue_empty);
         pthread_mutex_unlock(&task_queue_lock);
 
-        FILE* file = fopen(task_node->file_name, "r");
+        if (cached_file_name != task_node->file_name) {
+            fclose(cached_file_ptr);
+            cached_file_ptr = fopen(task_node->file_name, "r");
+            cached_file_name = task_node->file_name;
+        }
 
         long offset = task_node->file_position * CHUNK_SIZE;
-        fseek(file, offset, SEEK_SET);
+        fseek(cached_file_ptr, offset, SEEK_SET);
 
-        write_data_t* data = compress_data(file);
+        write_data_t* data = compress_data(cached_file_ptr);
 
         pthread_mutex_lock(&write_queue_lock);
         put_data(data, task_node->write_data_queue_position);
@@ -90,9 +96,10 @@ void* compression_worker(void* args) {
         pthread_mutex_unlock(&write_queue_lock);
 
         destroy_task_node(&task_node);
-        fclose(file);
 
-        return NULL;
     }
+
+    fclose(cached_file_ptr);
+    return NULL;
 }
 
