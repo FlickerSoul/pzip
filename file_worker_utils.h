@@ -6,6 +6,7 @@
 #define PZIP_FILE_WORKER_UTILS_H
 
 #include <stdio.h>
+#include <math.h>
 #include "constants.h"
 
 unsigned int get_chunk_num(char* file_name);

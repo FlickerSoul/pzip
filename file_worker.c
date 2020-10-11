@@ -3,7 +3,6 @@
 //
 
 #include "file_worker.h"
-#include <math.h>
 
 void* file_reader(void* args) {
     int file_num = *(int*)args;
