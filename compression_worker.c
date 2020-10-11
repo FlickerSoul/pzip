@@ -38,10 +38,7 @@ void* compression_worker(void* args) {
         int c, last = first_char = fgetc(file);
         int c_count = first_count = 0;
 
-        if (last != EOF) {
-            // should be error and never happen
-            return ;
-        }
+        assert(last != EOF);
 
         for (first_count = 1; (c = fgetc(file)) == last; first_count++) {
             // empty
@@ -86,6 +83,8 @@ void* compression_worker(void* args) {
 
         destroy_task_node(&task_node);
         fclose(file);
+
+        return NULL;
     }
 }
 
