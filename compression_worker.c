@@ -3,7 +3,6 @@
 //
 
 #include "compression_worker.h"
-#include "stdio.h"
 
 write_data_t* compress_data(FILE* file) {
 
@@ -63,6 +62,7 @@ write_data_t* compress_data(FILE* file) {
 void* compression_worker(void* args) {
     char* cached_file_name = NULL;
     FILE* cached_file_ptr = NULL;
+    
     while (1) {
         task_node_t* task_node;
 
