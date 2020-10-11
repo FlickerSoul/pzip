@@ -12,6 +12,12 @@ pzip_utils.o: pzip_utils.c pzip_utils.h
 task_queue.o: task_queue.c task_queue.h
 	$(CXX) $(CXX_FLAGS) -c -o $@ $<
 
+file_worker.o: file_worker.c file_worker.h
+	$(CXX) $(CXX_FLAGS) -c -o $@ $<
+
+compression_worker.o: compression_worker.c compression_worker.h
+	$(CXX) $(CXX_FLAGS) -c -o $@ $<
+
 test_utils.o: test_utils.c test_utils.h
 	$(CXX) $(CXX_FLAGS) -c -o $@ $<
 
