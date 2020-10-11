@@ -6,6 +6,7 @@
 #define PZIP_TASK_QUEUE_H
 
 #include <stdlib.h>
+#include <stdint.h>
 
 typedef struct _write_data_t {
     /*
