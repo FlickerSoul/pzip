@@ -7,6 +7,7 @@
 void* file_reader(void* args) {
     printf("start reading\n");
     int file_num = *(int*)args;
+    printf("file num: %i\n", file_num);
     args += INT_SIZE;
 
     char** file_names = (char**) args;
@@ -38,7 +39,7 @@ void* file_reader(void* args) {
             while (global_task_queue->count == global_task_queue->size) {
                 pthread_cond_wait(&task_queue_empty, &task_queue_lock);
             }
-            printf("start making data for %s file at position %u at write array %llu \n", file_names[i], j, write_queue_position_counter-1);
+            printf("start making data for %s file at position %u at write array %llu \n", file_names[i], j, write_queue_position_counter);
 
             task_node_t* tn = create_task_node(file_names[i], j, write_queue_position_counter++);
 
@@ -50,12 +51,16 @@ void* file_reader(void* args) {
         }
     }
 
+    printf("end adding tasks\n");
+
     // indicate the works are over
     // no 996
-    pthread_mutex_lock(&task_queue_lock);
-    global_task_queue->end = 1;
-    pthread_cond_signal(&task_queue_filled);
-    pthread_mutex_lock(&task_queue_lock);
+    // pthread_mutex_lock(&task_queue_lock);
+    // global_task_queue->end = 1;
+    // pthread_cond_signal(&task_queue_filled);
+    // pthread_mutex_lock(&task_queue_lock);
+
+    printf("end indicating end\n");
 
     return NULL;
 }

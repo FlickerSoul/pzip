@@ -17,12 +17,14 @@ int main(int argc, char** argv) {
     printf("allocated reader argv\n");
 
     *(int*)temp = argc - 1;
+    printf("read argc: %i\n", *(int*)read_worker_argv);
     temp += INT_SIZE;
 
     printf("loaded file sizes\n");
 
     for (int i = 1; i < argc; i++) {
         *(char**)temp = strdup(argv[i]);
+        printf("added file names: %s\n", *(char**)temp);
         temp += CHAR_PTR_SIZE;
     }
 
@@ -30,22 +32,27 @@ int main(int argc, char** argv) {
 
     global_task_queue = quick_create_task_queue();
 
+    printf("created task queue\n");
+
     pthread_t read_thread;
     pthread_t compression_threads[THREAD_NUM];
     pthread_t write_thread;
 
-    pthread_create(&read_thread, NULL, file_reader, temp);
-    pthread_create(&write_thread, NULL, file_writer, NULL);
-    for (int i = 0; i < THREAD_NUM; i++) {
-        pthread_create(&compression_threads[i], NULL, compression_worker, NULL);
-    }
+    pthread_create(&read_thread, NULL, file_reader, read_worker_argv);
+    // pthread_create(&write_thread, NULL, file_writer, NULL);
+    // for (int i = 0; i < THREAD_NUM; i++) {
+    //     pthread_create(&compression_threads[i], NULL, compression_worker, NULL);
+    // }
 
     void* dummy_return;
-    pthread_join(write_thread, dummy_return);
-    pthread_join(read_thread, dummy_return);
-    for (int i = 0; i < THREAD_NUM; i++) {
-        pthread_join(compression_threads[i], dummy_return);
-    }
+    printf("start join\n");
+    // pthread_join(write_thread, dummy_return);
+    pthread_join(read_thread, NULL);
+    // for (int i = 0; i < THREAD_NUM; i++) {
+    //     pthread_join(compression_threads[i], dummy_return);
+    // }
+    printf("end join\n");
+
 
     temp = read_worker_argv + INT_SIZE;
     for (int i = 0; i < THREAD_NUM; i++) {
@@ -53,8 +60,8 @@ int main(int argc, char** argv) {
         temp += CHAR_PTR_SIZE;
     }
     free(read_worker_argv);
-    destroy_task_queue(&global_task_queue);
-    destroy_write_queue(&global_write_queue);
+    // destroy_task_queue(&global_task_queue);
+    // destroy_write_queue(&global_write_queue);
 
     return 0;
 }
