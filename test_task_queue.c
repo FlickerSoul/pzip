@@ -124,4 +124,6 @@ int main() {
     test_data_composition();
     test_task_enqueue();
     test_write_data_enqueue();
+
+    return 0;
 }
