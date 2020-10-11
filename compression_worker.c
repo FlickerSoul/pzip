@@ -67,13 +67,17 @@ void* compression_worker(void* args) {
     FILE* cached_file_ptr = NULL;
     
     while (1) {
+        printf("compression worker inited\n");
         task_node_t* task_node;
 
         pthread_mutex_lock(&task_queue_lock);
+        printf("compression got task lock\n");
+
         while (global_task_queue->count == 0) {
             if (global_task_queue->end) {
                 break;
             }
+            printf("compression worker wait\n");
             pthread_cond_wait(&task_queue_filled, &task_queue_lock);
         }
 

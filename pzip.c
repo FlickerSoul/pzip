@@ -8,17 +8,25 @@ int main(int argc, char** argv) {
         exit(1);
     }
 
+    printf("start allocated reader argv\n");
+
     void* read_worker_argv = malloc((argc - 1) * sizeof(char*) + sizeof(int));
 
     void* temp = read_worker_argv;
 
+    printf("allocated reader argv\n");
+
     *(int*)temp = argc - 1;
     temp += INT_SIZE;
+
+    printf("loaded file sizes\n");
 
     for (int i = 1; i < argc; i++) {
         *(char**)temp = strdup(argv[i]);
         temp += CHAR_PTR_SIZE;
     }
+
+    printf("loaded file names\n");
 
     global_task_queue = quick_create_task_queue();
 
