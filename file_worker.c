@@ -26,7 +26,7 @@ void* file_reader(void* args) {
     for (int i = 0; i < file_num; i++) {
         for (unsigned int j = 0; j < chunck_size_array[i]; j++) {
             pthread_mutex_lock(&task_queue_lock);
-            while (gloabl_task_queue->count == gloabl_task_queue->size) {
+            while (global_task_queue->count == global_task_queue->size) {
                 pthread_cond_wait(&task_queue_empty, &task_queue_lock);
             }
             task_node_t* tn = create_task_node(file_names[i], j, write_queue_position_counter++);
@@ -39,7 +39,7 @@ void* file_reader(void* args) {
     // indicate the works are over
     // no 996
     pthread_mutex_lock(&task_queue_lock);
-    gloabl_task_queue->end = 1;
+    global_task_queue->end = 1;
     pthread_cond_signal(&task_queue_filled);
     pthread_mutex_lock(&task_queue_lock);
 

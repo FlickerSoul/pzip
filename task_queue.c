@@ -6,7 +6,7 @@
 #include "constants.h"
 
 
-task_queue_t* gloabl_task_queue = NULL;
+task_queue_t* global_task_queue = NULL;
 write_queue_t* global_write_queue = NULL;
 
 
@@ -30,15 +30,15 @@ task_queue_t* quick_create_task_queue() {
 }
 
 void put_task(task_node_t* task_node) {
-    gloabl_task_queue->tasks[gloabl_task_queue->fill_ptr] = task_node;
-    gloabl_task_queue->fill_ptr = (gloabl_task_queue->fill_ptr+1) % gloabl_task_queue->size;
-    gloabl_task_queue->count++;
+    global_task_queue->tasks[global_task_queue->fill_ptr] = task_node;
+    global_task_queue->fill_ptr = (global_task_queue->fill_ptr+1) % global_task_queue->size;
+    global_task_queue->count++;
 }
 
 task_node_t* get_task() {
-    task_node_t* task_node = gloabl_task_queue->tasks[gloabl_task_queue->use_ptr];
-    gloabl_task_queue->use_ptr = (gloabl_task_queue->use_ptr + 1) % gloabl_task_queue->size;
-    gloabl_task_queue->count--;
+    task_node_t* task_node = global_task_queue->tasks[global_task_queue->use_ptr];
+    global_task_queue->use_ptr = (global_task_queue->use_ptr + 1) % global_task_queue->size;
+    global_task_queue->count--;
 
     return task_node;
 }

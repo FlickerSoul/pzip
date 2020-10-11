@@ -85,7 +85,7 @@ typedef struct _task_queue_t {
 
 } task_queue_t;
 
-extern task_queue_t* gloabl_task_queue;
+extern task_queue_t* global_task_queue;
 extern write_queue_t* global_write_queue;
 
 task_queue_t* create_task_queue(unsigned int process_queue_size);

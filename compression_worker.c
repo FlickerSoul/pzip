@@ -11,8 +11,8 @@ void* compression_worker(void* args) {
         task_node_t* task_node;
 
         pthread_mutex_lock(&task_queue_lock);
-        while (gloabl_task_queue->count == 0) {
-            if (gloabl_task_queue->end) {
+        while (global_task_queue->count == 0) {
+            if (global_task_queue->end) {
                 return NULL;
             }
             pthread_cond_wait(&task_queue_filled, &task_queue_lock);

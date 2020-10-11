@@ -66,9 +66,9 @@ void test_write_data_create_and_delete() {
 }
 
 void test_task_enqueue() {
-    gloabl_task_queue = create_task_queue(2);
+    global_task_queue = create_task_queue(2);
 
-    assert(gloabl_task_queue->size == 2);
+    assert(global_task_queue->size == 2);
 
     char* chunk_content = "abcde";
     int file_position = 0;
@@ -77,16 +77,16 @@ void test_task_enqueue() {
     task_node_t* task_node_ptr1 = create_task_node(chunk, file_position, queue_position);
 
     put_task(task_node_ptr1);
-    assert(gloabl_task_queue->fill_ptr == 1);
+    assert(global_task_queue->fill_ptr == 1);
     put_task(task_node_ptr1);
-    assert(gloabl_task_queue->fill_ptr == 0);
+    assert(global_task_queue->fill_ptr == 0);
 
     assert(get_task() == task_node_ptr1);
-    assert(gloabl_task_queue->use_ptr == 1);
+    assert(global_task_queue->use_ptr == 1);
     assert(get_task() == task_node_ptr1);
-    assert(gloabl_task_queue->use_ptr == 0);
+    assert(global_task_queue->use_ptr == 0);
 
-    destroy_task_queue(&gloabl_task_queue);
+    destroy_task_queue(&global_task_queue);
 }
 
 write_data_t* write_data_gen() {
