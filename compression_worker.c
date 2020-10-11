@@ -48,7 +48,7 @@ write_data_t* compress_data(FILE* file) {
 
         last_char = *(char*)(temp-CHAR_SIZE);
         last_count = *(uint32_t*)(temp-WRITE_CHUNK_SIZE);
-        data_chunk_num += 1;
+        data_chunk_num -= 1;
 
         if (data_chunk_num == 0) {
             free(chunk);
@@ -56,7 +56,7 @@ write_data_t* compress_data(FILE* file) {
         }
     }
 
-    write_data_t* data = create_write_data(chunk, first_char, first_count, last_char, last_count);
+    write_data_t* data = create_write_data(chunk, first_char, first_count, last_char, last_count, data_chunk_num);
 
     return data;
 }
