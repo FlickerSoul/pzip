@@ -1,62 +1,51 @@
-/*
- * A simple run-length encoder in C
- * The resulting file format is <length> (32-bit unsigned binary) followed
- * by a literal (b-bit character), repeated for as long as necessary.
- */
-
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
-#include <unistd.h>
 
-//////////////////////////////////////////////////////////////////////////////
-// Given an input file pointer, read and compress the contents of the file to
-// stdout.
-void zip(FILE *fp)
-{
-  int c, last = fgetc(fp);
-  uint32_t count;
-
-  while (last != EOF) {
-    for (count = 1; (c = fgetc(fp)) == last; count++)  // Count repeats of last
-      ;
-
-    if (fwrite(&count, sizeof(count), 1, stdout) < 1) {
-      perror("Can't write to stdout");
-      exit(1);
-    }
-    printf("%c", last);
-    last = c;
-  }
-
-  if (!feof(fp)) {
-    perror("Can't read from file");
+FILE* open_file(char* filename) {
+  FILE* fp = fopen(filename, "r");
+  if (fp == NULL) {
+    printf("wzip: cannot open file\n");
     exit(1);
   }
+
+  return fp;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// Read all files listed in the argument list after a search term,
-// and output matching lines to standard output.
-int main(int argc, char** argv)
-{
-  if (argc <= 1) {
-    fprintf(stderr, "%s: searchterm file ...\n", argv[0]);
+int main(int argc, char** argv) {
+  if (argc < 2) {
+    printf("wzip: file1 [file2 ...]\n");
     exit(1);
   }
 
+  FILE* fp;
+  int c = 0;
+  int last = -1;
+  int counter = 0;
   for (int i = 1; i < argc; i++) {
-    FILE *in = fopen(argv[i], "r");
-    if (!in) {
-      perror("wunzip: cannot open file");
-      exit(1);
+    fp = open_file(argv[i]);
+
+    while ((c = fgetc(fp)) != EOF) {
+      if (last == -1) {
+        last = c;
+        counter++;
+      } else if (c != last) {
+        fwrite(&counter, sizeof(int), 1, stdout);
+        fputc(last, stdout);
+        counter = 1;
+      } else {
+        counter++;
+      }
+
+      last = c;
     }
-    zip(in);
-    fclose(in);
+
+    fclose(fp);
+  }
+
+  if (counter > 0) {
+    fwrite(&counter, sizeof(int), 1, stdout);
+    fputc(last, stdout);
   }
 
   return 0;
 }
-
