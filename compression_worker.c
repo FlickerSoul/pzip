@@ -5,36 +5,50 @@
 #include "compression_worker.h"
 
 write_data_t* compress_data(FILE* file) {
-    int char_counter = CHUNK_SIZE;
+    char buffer[CHUNK_SIZE];
+    int buffer_length = 0;
+
+    for (buffer_length = 0; buffer_length < CHUNK_SIZE; buffer_length++) {
+        buffer[buffer_length] = fgetc(file);
+        if (buffer[buffer_length] == EOF) {
+            break;
+        }
+    }
+
+    // buffer_length either = chunk_size or points at EOF
+    // that is valid char is 1 offset before buffer length
+    int array_counter = 0;
+
+    int first_char = buffer[0];
+    uint32_t first_count = 0;
+    assert(first_char != EOF);
+
+    int last_char = 0;
+    uint32_t last_count = 0;
 
     void* chunk = NULL;
     int data_chunk_num = 0;
 
-    int first_char, last_char = 0;
-    uint32_t first_count, last_count = 0;
-
-    // first char
-    int c, last = first_char = fgetc(file);
-    int c_count = first_count = 0;
-
-    char_counter -= 1;
-
-    assert(last != EOF);
-
-    for (first_count = 1; (c = fgetc(file)) == last; first_count++, char_counter--) {
+    for (first_count = 0; buffer[array_counter] == first_char; array_counter++) {
+        // fputc(buffer[array_counter], stdout);
+        first_count++;
         // empty
     }
 
-    last = c;
+    // printf("fc: %c; fct: %i\n", first_char, first_count);
 
-    if (last != EOF) {
+    if (buffer[array_counter] != EOF) {
         chunk = malloc(WRITE_CHUNK_SIZE * CHUNK_SIZE);
         void* temp = chunk;
 
-        while (last != EOF && char_counter != 0) {
-            for (c_count = 1; (c = fgetc(file)) == last && char_counter != 0; c_count++, char_counter--) {
+        uint32_t c_count = 0;
+        int c, last = buffer[array_counter];
+
+        while (array_counter < buffer_length && last != EOF) {
+            for (c_count = 0; (c = buffer[array_counter]) == last; c_count++, array_counter++) {
                 // empty
             }
+            // printf("arr index: %i; cc: %c; cct: %i\n", array_counter, last, c_count);
 
             *(uint32_t*)temp = c_count;
             temp += UINT32_SIZE;
@@ -55,6 +69,10 @@ write_data_t* compress_data(FILE* file) {
             chunk = NULL;
         }
     }
+
+    // for (int i = 0; i < buffer_length; i++) {
+    //     fputc(buffer[i], stdout);
+    // }
 
     write_data_t* data = create_write_data(chunk, first_char, first_count, last_char, last_count, data_chunk_num);
 
@@ -106,6 +124,9 @@ void* compression_worker(void* args) {
 
         long offset = task_node->file_position * CHUNK_SIZE;
         fseek(cached_file_ptr, offset, SEEK_SET);
+
+        // printf("\n=====file position: %li \n", offset);
+
 
         // printf("compression file seeked\n");
 
