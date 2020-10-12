@@ -31,8 +31,8 @@ write_data_t* compress_data(FILE* file) {
         chunk = malloc(WRITE_CHUNK_SIZE * CHUNK_SIZE);
         void* temp = chunk;
 
-        while (last != EOF || char_counter == 0) {
-            for (c_count = 1; (c = fgetc(file)) == last || char_counter == 0; c_count++, char_counter--) {
+        while (last != EOF && char_counter != 0) {
+            for (c_count = 1; (c = fgetc(file)) == last && char_counter != 0; c_count++, char_counter--) {
                 // empty
             }
 
