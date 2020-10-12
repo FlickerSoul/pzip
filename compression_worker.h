@@ -9,8 +9,10 @@
 #include "locks.h"
 #include "task_queue.h"
 #include "constants.h"
+#include <unistd.h>
+#include <fcntl.h>
 
-write_data_t* compress_data(FILE* file, unsigned long long qp);
+write_data_t* compress_data(int fd);
 void* compression_worker(void* args);
 
 #endif //PZIP_COMPRESSION_WORKER_H
