@@ -56,7 +56,7 @@ write_data_t* compress_data(int fd) {
             *(uint32_t*)temp = c_count;
             temp += UINT32_SIZE;
             *(char*)temp = last;
-            temp += 1;
+            temp += CHAR_SIZE;
 
             last = c;
 

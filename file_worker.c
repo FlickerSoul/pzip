@@ -34,17 +34,15 @@ void* file_reader(void* args) {
 
     for (int i = 0; i < file_num; i++) {
         for (unsigned int j = 0; j < chunck_size_array[i]; j++) {
+            // printf("start making data for %s file at position %u at write array %llu \n", file_names[i], j, write_queue_position_counter);
+            task_node_t* tn = create_task_node(file_names[i], j, write_queue_position_counter++);
+            // printf("made data for %s file at position %u at write array %llu \n", file_names[i], j, write_queue_position_counter-1);
+
             pthread_mutex_lock(&task_queue_lock);
             // printf("locked task lock\n");
             while (global_task_queue->count == global_task_queue->size) {
                 pthread_cond_wait(&task_queue_empty, &task_queue_lock);
             }
-            // printf("start making data for %s file at position %u at write array %llu \n", file_names[i], j, write_queue_position_counter);
-
-            task_node_t* tn = create_task_node(file_names[i], j, write_queue_position_counter++);
-
-            // printf("made data for %s file at position %u at write array %llu \n", file_names[i], j, write_queue_position_counter-1);
-
             put_task(tn);
             pthread_cond_signal(&task_queue_filled);
 
