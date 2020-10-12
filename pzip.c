@@ -49,21 +49,28 @@ int main(int argc, char** argv) {
     // printf("joined write\n");
     pthread_join(read_thread, NULL);
     // printf("joined read\n");
+    // printf("task ended? %i\n", global_task_queue->end);
     for (int i = 0; i < THREAD_NUM; i++) {
+        pthread_cond_signal(&task_queue_filled);
         pthread_join(compression_threads[i], NULL);
     }
     // printf("joined compression\n");
     // printf("end join\n");
 
 
+
     temp = read_worker_argv + INT_SIZE;
-    for (int i = 0; i < THREAD_NUM; i++) {
+    for (int i = 0; i < argc - 1; i++) {
         free(*(char**)temp);
         temp += CHAR_PTR_SIZE;
     }
+    // printf("freed file names");
     free(read_worker_argv);
+    // printf("freed read worker argv\n");
     destroy_task_queue(&global_task_queue);
+    // printf("freed global task queue\n");
     destroy_write_queue(&global_write_queue);
+    // printf("freed read global write queue\n");
 
     return 0;
 }

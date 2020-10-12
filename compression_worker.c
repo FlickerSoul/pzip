@@ -87,30 +87,35 @@ void* compression_worker(void* args) {
     task_node_t* task_node;
 
     while (1) {
-        // printf("compression worker inited\n");
+        // printf("compression worker %i inited\n", pthread_self());
 
         pthread_mutex_lock(&task_queue_lock);
-        // printf("compression got task lock\n");
+        // printf("compression %i got task lock\n", pthread_self());
 
         while (global_task_queue->count == 0) {
+            // printf("compression %i finds no work\n", pthread_self());
+
             if (global_task_queue -> end) {
-                // printf("end compression\n");
+                pthread_mutex_unlock(&task_queue_lock);
+                // printf("compression %i end compression\n", pthread_self());
                 fclose(cached_file_ptr);
                 return NULL;
             }
 
-            // printf("compression worker wait\n");
+            // printf("compression worker %i wait\n", pthread_self());
             pthread_cond_wait(&task_queue_filled, &task_queue_lock);
 
-            // printf("wake up compression\n");
+            // printf("wake up compression %i\n", pthread_self());
         }
 
         task_node = get_task();
 
         pthread_cond_signal(&task_queue_empty);
+
+        // printf("compression worker %i unlock for task queue\n", pthread_self());
         pthread_mutex_unlock(&task_queue_lock);
 
-        // printf("compressiong read task\n");
+        // printf("compressiong worker %i read task\n", pthread_self());
 
         if (cached_file_name != task_node->file_name) {
             if (cached_file_name != NULL) {
@@ -120,26 +125,27 @@ void* compression_worker(void* args) {
             cached_file_name = task_node->file_name;
         }
 
-        // printf("compression created file des\n");
+        // printf("compression worker %i created file des\n", pthread_self());
 
         long offset = task_node->file_position * CHUNK_SIZE;
         fseek(cached_file_ptr, offset, SEEK_SET);
 
-        // printf("\n=====file position: %li \n", offset);
+        // // printf("\n=====file position: %li \n", offset);
 
 
-        // printf("compression file seeked\n");
+        // printf("compression worker %i file seeked\n", pthread_self());
 
         write_data_t* data = compress_data(cached_file_ptr);
 
         // printf("got data for %s file at position %llu at write array %llu \n", cached_file_name, task_node->file_position, task_node->write_data_queue_position);
 
         pthread_mutex_lock(&write_queue_lock);
-        // printf("acquired lock for writing data\n");
+        // printf("compression worker %i acquired lock for writing data\n", pthread_self());
         put_data(data, task_node->write_data_queue_position);
-        // printf("write queue info after writing at position %llu\n", task_node->write_data_queue_position);
+        // printf("compression worker %i write queue info after writing at position %llu\n", pthread_self(), task_node->write_data_queue_position);
         pthread_cond_signal(&write_queue_filled);
-        // printf("signaled added data\n");
+        // printf("compression worker %i signaled added data\n", pthread_self());
+        // printf("compression worker %i unlock for writing data\n", pthread_self());
         pthread_mutex_unlock(&write_queue_lock);
 
         destroy_task_node(&task_node);
