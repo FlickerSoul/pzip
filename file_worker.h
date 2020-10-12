@@ -9,6 +9,7 @@
 #include "task_queue.h"
 #include "locks.h"
 #include "file_worker_utils.h"
+#include "pzip_utils.h"
 
 void* file_reader(void* args);
 void output(write_data_t* data);

@@ -59,6 +59,9 @@ void* file_reader(void* args) {
     // no 996
     pthread_mutex_lock(&task_queue_lock);
     global_task_queue->end = 1;
+    for (int i = 0; i < THREAD_NUM; i++) {
+        pthread_cond_signal(&task_queue_filled);
+    }
     // printf("read worker %i unlock for task queue after signaling no stuff\n", pthread_self());
     pthread_mutex_unlock(&task_queue_lock);
 

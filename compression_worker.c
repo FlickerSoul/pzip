@@ -35,7 +35,7 @@ write_data_t* compress_data(FILE* file) {
         // empty
     }
 
-    // printf("fc: %c; fct: %i\n", first_char, first_count);
+    // // printf("fc: %c; fct: %i\n", first_char, first_count);
 
     if (buffer[array_counter] != EOF) {
         chunk = malloc(WRITE_CHUNK_SIZE * CHUNK_SIZE);
