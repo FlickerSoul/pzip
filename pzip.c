@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
     // printf("joined read\n");
     // printf("task ended? %i\n", global_task_queue->end);
     for (int i = 0; i < THREAD_NUM; i++) {
-        pthread_cond_signal(&task_queue_filled);
+        // pthread_cond_signal(&task_queue_filled);
         pthread_join(compression_threads[i], NULL);
     }
     // printf("joined compression\n");
