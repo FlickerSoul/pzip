@@ -65,6 +65,9 @@ void* file_reader(void* args) {
     return NULL;
 }
 
+// void raw_output(write_data_t* data) {
+// 
+// }
 
 void output(write_data_t* data) {
     // printf("output data: fc %c, fct %u, lc %c, lct %u, main: %p\n", data->first_char, data->first_count, data->last_char, data->last_count, data->main_data);
@@ -74,16 +77,15 @@ void output(write_data_t* data) {
     }
 
     fwrite(&(data->first_count), UINT32_SIZE, 1, stdout);
-    printf("%c", data->first_char);
+    fputc(data->first_char, stdout);
 
     if (data->main_data != NULL) {
-        fwrite(&data->main_data, data->data_chunk_num * WRITE_CHUNK_SIZE, 1, stdout);
-
+        fwrite(data->main_data, data->data_chunk_num * WRITE_CHUNK_SIZE, 1, stdout);
     }
 
-    if (data->last_count > 0) {
-        fwrite(&data->last_count, UINT32_SIZE, 1, stdout);
-        printf("%c", data->last_char);
+    if (data->last_count != 0) {
+        fwrite(&(data->last_count), UINT32_SIZE, 1, stdout);
+        fputc(data->last_char, stdout);
     }
 }
 
