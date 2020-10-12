@@ -95,7 +95,9 @@ void* compression_worker(void* args) {
         // printf("compressiong read task\n");
 
         if (cached_file_name != task_node->file_name) {
-            fclose(cached_file_ptr);
+            if (cached_file_name != NULL) {
+                fclose(cached_file_ptr);
+            }
             cached_file_ptr = fopen(task_node->file_name, "r");
             cached_file_name = task_node->file_name;
         }
