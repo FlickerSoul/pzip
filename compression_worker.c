@@ -3,7 +3,6 @@
 //
 
 #include "compression_worker.h"
-// #include <string.h>
 
 write_data_t* compress_data(FILE* file, unsigned long long qp) {
    char buffer[CHUNK_SIZE];
@@ -224,7 +223,6 @@ void* compression_worker(void* args) {
         pthread_mutex_unlock(&write_queue_lock);
 
         destroy_task_node(&task_node);
-
     }
 
     fclose(cached_file_ptr);
