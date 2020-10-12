@@ -162,6 +162,7 @@ void* file_writer(void* args) {
         // printf("wake up to write last one\n");
     }
     output(global_write_queue->write_data_queue[global_write_queue->queue_size-1]);
+    destroy_write_data(&global_write_queue->write_data_queue[global_write_queue->queue_size-1]);
     // printf("wrote last one\n");
 
     pthread_mutex_unlock(&write_queue_lock);
