@@ -98,7 +98,9 @@ void* compression_worker(void* args) {
             if (global_task_queue -> end) {
                 pthread_mutex_unlock(&task_queue_lock);
                 // printf("compression %i end compression\n", pthread_self());
-                fclose(cached_file_ptr);
+                if (cached_file_ptr != NULL) {
+                    fclose(cached_file_ptr);
+                }
                 return NULL;
             }
 
