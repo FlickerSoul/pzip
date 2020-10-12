@@ -1,8 +1,6 @@
 *.o
 *.dSYM
 tests-out/
-tests/
-test-wzip.sh
 pzip
 wzip
 .idea/
