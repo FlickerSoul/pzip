@@ -4,7 +4,7 @@ int main(int argc, char** argv) {
     get_thread_num();
 
     if (argc < 2) {
-        // printf("wzip: file1 [file2 ...]\n");
+        printf("wzip: file1 [file2 ...]\n");
         exit(1);
     }
 

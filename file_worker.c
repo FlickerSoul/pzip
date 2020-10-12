@@ -67,16 +67,23 @@ void* file_reader(void* args) {
 
 
 void output(write_data_t* data) {
+    // printf("output data: fc %c, fct %u, lc %c, lct %u, main: %p\n", data->first_char, data->first_count, data->last_char, data->last_count, data->main_data);
+
+    if (data->first_count == 0) {
+        return;
+    }
+
     fwrite(&(data->first_count), UINT32_SIZE, 1, stdout);
     printf("%c", data->first_char);
 
     if (data->main_data != NULL) {
         fwrite(&data->main_data, data->data_chunk_num * WRITE_CHUNK_SIZE, 1, stdout);
 
-        if (data->last_count > 0) {
-            fwrite(&data->last_count, UINT32_SIZE, 1, stdout);
-            printf("%c", data->last_char);
-        }
+    }
+
+    if (data->last_count > 0) {
+        fwrite(&data->last_count, UINT32_SIZE, 1, stdout);
+        printf("%c", data->last_char);
     }
 }
 
@@ -122,8 +129,15 @@ void* file_writer(void* args) {
         pthread_mutex_unlock(&write_queue_lock);
 
         // printf("got previous data and current data\n");
+        // printf("p data: fc %c, fct %u, lc %c, lct %u, main: %p\n", previous_data->first_char, previous_data->first_count, previous_data->last_char, previous_data->last_count, previous_data->main_data);
+        // printf("c data: fc %c, fct %u, lc %c, lct %u, main: %p\n", current_data->first_char, current_data->first_count, current_data->last_char, current_data->last_count, current_data->main_data);
 
-        if (previous_data->last_count > 0 && previous_data->last_char == current_data->first_char) {
+        // printf("check: %i, %i\n", previous_data->last_count == 0, previous_data->first_char == current_data->first_char);
+
+        if (previous_data->last_count == 0 && previous_data->first_char == current_data->first_char) {
+            current_data->first_count += previous_data->first_count;
+            previous_data->first_count = 0;
+        } else if (previous_data->last_count > 0 && previous_data->last_char == current_data->first_char) {
             current_data->first_count += previous_data->last_count;
             previous_data->last_count = 0;
         } 
