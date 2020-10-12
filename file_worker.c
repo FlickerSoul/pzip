@@ -147,7 +147,7 @@ void* file_writer(void* args) {
         } else if (previous_data->last_count > 0 && previous_data->last_char == current_data->first_char) {
             current_data->first_count += previous_data->last_count;
             previous_data->last_count = 0;
-        } 
+        }
 
         output(previous_data);
         destroy_write_data(&global_write_queue->write_data_queue[previous_position]);

@@ -3,9 +3,10 @@
 //
 
 #include "compression_worker.h"
+// #include <string.h>
 
-write_data_t* compress_data(FILE* file) {
-    char buffer[CHUNK_SIZE];
+write_data_t* compress_data(FILE* file, unsigned long long qp) {
+   char buffer[CHUNK_SIZE];
     int buffer_length = 0;
 
     for (buffer_length = 0; buffer_length < CHUNK_SIZE; buffer_length++) {
@@ -136,8 +137,80 @@ void* compression_worker(void* args) {
 
 
         // printf("compression worker %i file seeked\n", pthread_self());
+        char buffer[CHUNK_SIZE];
+        int buffer_length = 0;
 
-        write_data_t* data = compress_data(cached_file_ptr);
+        for (buffer_length = 0; buffer_length < CHUNK_SIZE; buffer_length++) {
+            buffer[buffer_length] = fgetc(cached_file_ptr);
+            if (buffer[buffer_length] == EOF) {
+                break;
+            }
+        }
+
+        // buffer_length either = chunk_size or points at EOF
+        // that is valid char is 1 offset before buffer length
+        int array_counter = 0;
+
+        int first_char = buffer[0];
+        uint32_t first_count = 0;
+        assert(first_char != EOF);
+
+        int last_char = 0;
+        uint32_t last_count = 0;
+
+        void* chunk = NULL;
+        int data_chunk_num = 0;
+
+        for (first_count = 0; buffer[array_counter] == first_char; array_counter++) {
+            // fputc(buffer[array_counter], stdout);
+            first_count++;
+            // empty
+        }
+
+        // // printf("fc: %c; fct: %i\n", first_char, first_count);
+
+        if (buffer[array_counter] != EOF) {
+            chunk = malloc(WRITE_CHUNK_SIZE * CHUNK_SIZE);
+            void* temp = chunk;
+
+            uint32_t c_count = 0;
+            int c, last = buffer[array_counter];
+
+            while (array_counter < buffer_length && last != EOF) {
+                for (c_count = 0; (c = buffer[array_counter]) == last; c_count++, array_counter++) {
+                    // empty
+                }
+                // printf("arr index: %i; cc: %c; cct: %i\n", array_counter, last, c_count);
+
+                *(uint32_t*)temp = c_count;
+                temp += UINT32_SIZE;
+                *(char*)temp = last;
+                temp += 1;
+
+                last = c;
+
+                data_chunk_num += 1;
+            }
+
+            last_char = *(char*)(temp-CHAR_SIZE);
+            last_count = *(uint32_t*)(temp-WRITE_CHUNK_SIZE);
+            data_chunk_num -= 1;
+
+            if (data_chunk_num == 0) {
+                free(chunk);
+                chunk = NULL;
+            }
+        }
+
+        // for (int i = 0; i < buffer_length; i++) {
+        //     fputc(buffer[i], stdout);
+        // }
+
+        write_data_t* data = create_write_data(chunk, first_char, first_count, last_char, last_count, data_chunk_num);
+
+        // return data;
+
+        // write_data_t* data = compress_data(cached_file_ptr, task_node->write_data_queue_position);
 
         // printf("got data for %s file at position %llu at write array %llu \n", cached_file_name, task_node->file_position, task_node->write_data_queue_position);
 
