@@ -1,5 +1,7 @@
 Update: 
 Minor changes to the content between the locks. The following test is run on my computer with 8 cores and 16 from hyperthreading (not sure if the description is correct). 
+
+```text
 ❯ time ./pzip ./tests/6.in > a.o
 ./pzip ./tests/6.in > a.o  0.02s user 0.03s system 31% cpu 0.167 total
 ❯ echo $NTHREADS
@@ -10,6 +12,7 @@ Minor changes to the content between the locks. The following test is run on my 
 ❯ export NTHREADS=8
 ❯ time ./pzip ./tests/6.in > a.o
 ./pzip ./tests/6.in > a.o  0.03s user 0.04s system 414% cpu 0.016 total
+```text 
 
 Update: 
 The 6.in runs with 4 threads twice as fast as that with 1 thread. I got 0.027 and 0.056 respectively. 
